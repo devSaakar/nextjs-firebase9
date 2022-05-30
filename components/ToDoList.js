@@ -9,8 +9,9 @@ const ToDoList = ({todosProps})=> {
   const {currentUser} = useAuth();
 
   useEffect(()=>{
-    console.log('todosProps :>> ', todosProps);
-    setTodos(JSON.parse(todosProps))
+    if(todosProps){
+      setTodos(JSON.parse(todosProps))
+    }
   },[])
   
   useEffect(() => {
