@@ -2,10 +2,12 @@ import { Button, TextField } from "@mui/material";
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { db } from "../firebase";
+import {useAuth} from '../Auth'
 import { ToDoContext } from "../pages/ToDoContext";
 
 const ToDoForm = () => {
   const inputAreaRef = useRef();
+  const {currentUser} = useAuth();
   const { showAlert, todo, setTodo } = useContext(ToDoContext);
 
   const onSubmit = async () => {
@@ -19,6 +21,7 @@ const ToDoForm = () => {
           const collectionRef = collection(db, "todos");
           const docRef = await addDoc(collectionRef, {
             ...todo,
+            email:currentUser.email,
             timestamp: serverTimestamp(),
           });
           setTodo({ title: "", details: "" });
@@ -43,7 +46,7 @@ useEffect(() => {
 
   return (
     <div ref={inputAreaRef}>
-        <pre>{JSON.stringify(todo,null,'\t')}</pre>
+        {/* <pre>{JSON.stringify(todo,null,'\t')}</pre> */}
       {/*  learning1 <pre>{JSON.stringify(todo)}</pre> */}
       <TextField
         fullWidth

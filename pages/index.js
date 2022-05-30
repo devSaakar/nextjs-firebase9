@@ -1,26 +1,42 @@
-import { Alert, Container, Snackbar } from "@mui/material";
+import {
+  Alert,
+  Avatar,
+  Box,
+  Container,
+  IconButton,
+  Snackbar,
+  Typography,
+} from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
+import { useAuth } from "../Auth";
 import ToDoForm from "../components/ToDoForm";
 import ToDoList from "../components/ToDoList";
+import { auth, db } from "../firebase";
 import styles from "../styles/Home.module.css";
 import { ToDoContext } from "./ToDoContext";
 
-export default function Home() {
+import nookies from "nookies";
+import { verifyIdToken } from "../firebaseAdmin";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+
+export default function Home({ todosProps }) {
+  const { currentUser } = useAuth();
+
   const [open, setOpen] = useState(false);
-  const [todo, setTodo] = useState({title:"",details:""});
+  const [todo, setTodo] = useState({ title: "", details: "" });
   const [alertType, setAlertType] = useState("success");
   const [alertMessage, setalertMessage] = useState("");
 
-  const showAlert = (type,message)=>{
+  const showAlert = (type, message) => {
     setAlertType(type);
     setalertMessage(message);
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -28,10 +44,21 @@ export default function Home() {
   };
 
   return (
-    <ToDoContext.Provider value={{showAlert, todo, setTodo}}>
+    <ToDoContext.Provider value={{ showAlert, todo, setTodo }}>
       <Container maxWidth="sm">
+        <Box sx={{ display: "flex", justifyContent: "space-between" }} mt={3}>
+          <Typography variant="h5">{currentUser.displayName}</Typography>
+          <IconButton onClick={() => auth.signOut()}>
+            <Avatar src={currentUser.photoURL} sx={{ width: 60, height: 60 }} />
+          </IconButton>
+        </Box>
         <ToDoForm />
-        <Snackbar anchorOrigin={{ vertical:'top', horizontal:'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
           <Alert
             onClose={handleClose}
             severity={alertType}
@@ -40,8 +67,39 @@ export default function Home() {
             {alertMessage}
           </Alert>
         </Snackbar>
-        <ToDoList />
+        <ToDoList todosProps={todosProps} />
       </Container>
     </ToDoContext.Provider>
   );
+}
+
+export async function getServerSideProps(context) {
+  try {
+    const cookies = nookies.get(context);
+    const token = await verifyIdToken(cookies.token);
+    const { email } = token;
+    const collectionRef = collection(db, "todos");
+    const q = query(
+      collectionRef,
+      where("email", "==", email),
+      orderBy("timestamp", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+    let todos = [];
+    console.log("querySnapshot :>> ", querySnapshot);
+    querySnapshot.forEach((doc) =>
+      todos.push({
+        ...doc.data(),
+        id: doc.id,
+        timestamp: doc.data().timestamp.toDate().getTime(),
+      })
+    );
+    return {
+      props: {
+        todosProps: JSON.stringify(todos) || [],
+      },
+    };
+  } catch (error) {
+    return { props: {} };
+  }
 }
