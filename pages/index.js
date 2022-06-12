@@ -7,19 +7,18 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import Head from "next/head";
-import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "../Auth";
 import ToDoForm from "../components/ToDoForm";
 import ToDoList from "../components/ToDoList";
 import { auth, db } from "../firebase";
-import styles from "../styles/Home.module.css";
-import { ToDoContext } from "./ToDoContext";
+import { ToDoContext } from "../context/ToDoContext";
 
 import nookies from "nookies";
 import { verifyIdToken } from "../firebaseAdmin";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import AnimationGraph from '../images/graph_animation.gif';
+import Image from "next/image";
 
 export default function Home({ todosProps }) {
   const { currentUser } = useAuth();
@@ -46,6 +45,7 @@ export default function Home({ todosProps }) {
   return (
     <ToDoContext.Provider value={{ showAlert, todo, setTodo }}>
       <Container maxWidth="sm">
+        <Image src={AnimationGraph} />
         <Box sx={{ display: "flex", justifyContent: "space-between" }} mt={3}>
           <Typography variant="h5">{currentUser.displayName}</Typography>
           <IconButton onClick={() => auth.signOut()}>
@@ -73,7 +73,7 @@ export default function Home({ todosProps }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getStaticProps(context) {
   try {
     const cookies = nookies.get(context);
     const token = await verifyIdToken(cookies.token);

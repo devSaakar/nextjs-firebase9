@@ -5,7 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
-import { ToDoContext } from "../pages/ToDoContext";
+import { ToDoContext } from "../context/ToDoContext";
 import { useRouter } from "next/router";
 
 const ToDo = ({ id, title, timestamp, details }) => {

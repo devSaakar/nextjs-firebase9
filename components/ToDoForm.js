@@ -3,7 +3,7 @@ import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/fi
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { db } from "../firebase";
 import {useAuth} from '../Auth'
-import { ToDoContext } from "../pages/ToDoContext";
+import { ToDoContext } from "../context/ToDoContext";
 
 const ToDoForm = () => {
   const inputAreaRef = useRef();
