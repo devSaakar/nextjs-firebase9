@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
         console.log("No User");
         setCurrentUser(null);
         setLoading(false);
-        nookies.set(undefined,"", token, {});
         return;
       }
 
