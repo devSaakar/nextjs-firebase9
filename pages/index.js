@@ -17,7 +17,7 @@ import { ToDoContext } from "../context/ToDoContext";
 import nookies from "nookies";
 import { verifyIdToken } from "../firebaseAdmin";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import AnimationGraph from '../images/graph_animation.gif';
+// import AnimationGraph from '../images/graph_animation.gif';
 import Image from "next/image";
 
 export default function Home({ todosProps }) {
@@ -45,7 +45,7 @@ export default function Home({ todosProps }) {
   return (
     <ToDoContext.Provider value={{ showAlert, todo, setTodo }}>
       <Container maxWidth="sm">
-        <Image src={AnimationGraph} />
+        {/* <Image layout='fill' src={AnimationGraph} /> */}
         <Box sx={{ display: "flex", justifyContent: "space-between" }} mt={3}>
           <Typography variant="h5">{currentUser.displayName}</Typography>
           <IconButton onClick={() => auth.signOut()}>
